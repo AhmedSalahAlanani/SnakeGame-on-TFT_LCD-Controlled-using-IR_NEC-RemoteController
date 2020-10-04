@@ -145,6 +145,58 @@ void HTFT_voidDrawPixel (u8 Copy_u8X, u8 Copy_u8Y, u16 Copy_u16Colour)
 	voidWriteData ((u8)(Copy_u16Colour));
 }
 //***************************************************************************************************************
+void HTFT_voidDrawVLine	(u8 Copy_u8X , u8 Copy_u8Y1, u8 Copy_u8Y2, u16 Copy_u16Colour)
+{
+	/*	SET COLUMN ADDRESS	*/
+		voidWriteCommand (TFT_COMMAND_CASET);
+		voidWriteData 	 ((u8)((Copy_u8X)&(0xFF00)));
+		voidWriteData	 ((u8)((Copy_u8X)&(0x00FF)));
+		voidWriteData	 ((u8)((Copy_u8X)&(0xFF00)));
+		voidWriteData	 ((u8)((Copy_u8X)&(0x00FF)));
+
+		/*	SET ROW ADDRESS	*/
+		voidWriteCommand (TFT_COMMAND_RASET);
+		voidWriteData	 ((u8)((Copy_u8Y1)&(0xFF00)));
+		voidWriteData	 ((u8)((Copy_u8Y1)&(0x00FF)));
+		voidWriteData	 ((u8)((Copy_u8Y2)&(0xFF00)));
+		voidWriteData	 ((u8)((Copy_u8Y2)&(0x00FF)));
+
+		/*	Draw the Rectangle	*/
+		voidWriteCommand (TFT_COMMAND_RAMWR);
+
+		for(u16 i=0; i<=Copy_u8Y2-Copy_u8Y1; i++ )
+		{
+			voidWriteData ((u8)(Copy_u16Colour >> 8));
+			voidWriteData ((u8)(Copy_u16Colour));
+		}
+}
+//***************************************************************************************************************
+void HTFT_voidDrawHLine	(u8 Copy_u8X1, u8 Copy_u8X2, u8 Copy_u8Y , u16 Copy_u16Colour)
+{
+	/*	SET COLUMN ADDRESS	*/
+		voidWriteCommand (TFT_COMMAND_CASET);
+		voidWriteData 	 ((u8)((Copy_u8X1)&(0xFF00)));
+		voidWriteData	 ((u8)((Copy_u8X1)&(0x00FF)));
+		voidWriteData	 ((u8)((Copy_u8X2)&(0xFF00)));
+		voidWriteData	 ((u8)((Copy_u8X2)&(0x00FF)));
+
+		/*	SET ROW ADDRESS	*/
+		voidWriteCommand (TFT_COMMAND_RASET);
+		voidWriteData	 ((u8)((Copy_u8Y)&(0xFF00)));
+		voidWriteData	 ((u8)((Copy_u8Y)&(0x00FF)));
+		voidWriteData	 ((u8)((Copy_u8Y)&(0xFF00)));
+		voidWriteData	 ((u8)((Copy_u8Y)&(0x00FF)));
+
+		/*	Draw the Rectangle	*/
+		voidWriteCommand (TFT_COMMAND_RAMWR);
+
+		for(u16 i=0; i<=Copy_u8X2-Copy_u8X1; i++ )
+		{
+			voidWriteData ((u8)(Copy_u16Colour >> 8));
+			voidWriteData ((u8)(Copy_u16Colour));
+		}
+}
+//***************************************************************************************************************
 void HTFT_voidDrawRectangle (u8 Copy_u8X1, u8 Copy_u8X2, u8 Copy_u8Y1, u8 Copy_u8Y2, u16 Copy_u16Colour)
 {
 	/*	SET COLUMN ADDRESS	*/
