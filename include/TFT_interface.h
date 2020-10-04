@@ -39,7 +39,9 @@
 void HTFT_voidInit 		    (void);
 void HTFT_voidDisplayImage  (const u16* Copy_pu16Image);
 void HTFT_voidFillColour    (u16 Copy_u16Colour);
-void HTFT_voidDrawPixel     (u8 Copy_u8X, u8 Copy_u8Y, u16 Copy_u16Colour);
+void HTFT_voidDrawPixel     (u8 Copy_u8X , u8 Copy_u8Y , u16 Copy_u16Colour);
+void HTFT_voidDrawVLine	    (u8 Copy_u8X , u8 Copy_u8Y1, u8 Copy_u8Y2, u16 Copy_u16Colour);
+void HTFT_voidDrawHLine	    (u8 Copy_u8X1, u8 Copy_u8X2, u8 Copy_u8Y , u16 Copy_u16Colour);
 void HTFT_voidDrawRectangle (u8 Copy_u8X1, u8 Copy_u8X2, u8 Copy_u8Y1, u8 Copy_u8Y2, u16 Copy_u16Colour);
 void HTFT_voidDrawCharacter (u8 Copy_u8Character, u8 Copy_u8X, u8 Copy_u8Y, u16 Copy_u16TextColour, u16 Copy_u16BG, u8 Copy_u8Size);
 void HTFT_voidDrawNumber 	(u8 Copy_u8Number, u8 Copy_u8X, u8 Copy_u8Y, u16 Copy_u16TextColour, u16 Copy_u16BGColour, u8 Copy_u8Size);
