@@ -44,7 +44,7 @@
 *                                       PRIVATE GLOBAL VARIABLES
 *********************************************************************************************************
 */
-/*	 standard ascii 5x7 font
+/*	 standard ASCII 5x7 font
  	 originally from glcdfont.c from Adafruit project	*/
 static const u8 Font[] = {
   0x00, 0x00, 0x00, 0x00, 0x00,
