@@ -107,6 +107,18 @@ static void DrawTheBorders (void)
 	HTFT_voidDrawRectangle (DISPLAY_X1  , FIELD_X1  , BORDER_Y , DISPLAY_Y2, TFT_COLOR_BROWN);
 }
 //***************************************************************************************************************
+static void DrawTheGrid (void)
+{
+	/*Draw Vertical Lines*/
+	HTFT_voidDrawVLine	(GRID_X1, BORDER_Y, FIELD_Y2,TFT_COLOR_BROWN);
+	HTFT_voidDrawVLine	(GRID_X2, BORDER_Y, FIELD_Y2,TFT_COLOR_BROWN);
+	HTFT_voidDrawVLine	(GRID_X3, BORDER_Y, FIELD_Y2,TFT_COLOR_BROWN);
+
+	/*Draw Horizontal Lines*/
+	HTFT_voidDrawHLine	(FIELD_X1, FIELD_X2, GRID_Y1, TFT_COLOR_BROWN);
+	HTFT_voidDrawHLine	(FIELD_X1, FIELD_X2, GRID_Y2, TFT_COLOR_BROWN);
+}
+//***************************************************************************************************************
 static void DisplayPromptMessage (void)
 {
 	HTFT_voidDrawRectangle (X_MESSAGE_BOX_START, X_MESSAGE_BOX_END, Y_MESSAGE_BOX_START, Y_MESSAGE_BOX_END, TFT_COLOR_ORANGE);
@@ -127,16 +139,13 @@ static void DisplayPromptMessage (void)
 static void StartNewGame (void)
 {
 	/*Set the Snake in Initial Position*/
-	Snake[0].BodyPart   = HEAD;
 	Snake[0].Direction  = RIGHT;
 	Snake[0].X_Position = X_SNAKE_STARTPOSITION;
 	Snake[0].Y_Position = Y_SNAKE_STARTPOSITION;
 
-	Snake[1].BodyPart   = BODY;
 	Snake[1].X_Position = X_SNAKE_STARTPOSITION - SNAKE_SIZE;
 	Snake[1].Y_Position = Y_SNAKE_STARTPOSITION;
 
-	Snake[2].BodyPart  = TAIL;
 	Snake[2].X_Position = X_SNAKE_STARTPOSITION - (2*SNAKE_SIZE);
 	Snake[2].Y_Position = Y_SNAKE_STARTPOSITION;
 
@@ -150,7 +159,7 @@ static void StartNewGame (void)
 	/*Prompt the User to Press the Button OK when Ready*/
 	DisplayPromptMessage();
 
-	/*Resend the Message after 65 seconds*/
+	/*Re-send the Message after 65 seconds*/
 	MTimer3_voidSetIntervalPeriodic (DELAY_TIMEOUT, DisplayPromptMessage);
 
 	/*Wait until the Button OK is pressed*/
@@ -161,6 +170,8 @@ static void StartNewGame (void)
 
 	UpdatePointsAndLevel();
 
+	/*Draw the Grid, the Snake, and the Fruit*/
+	DrawTheGrid  ();
 	DrawTheSnake ();
 	PlaceTheFruit();
 
@@ -187,11 +198,11 @@ static void UpdatePointsAndLevel (void)
 
 	if(!(Global_u8Points%LEVELUP_POINTS))
 	{
-		/*Update the Game Speed*/
-		UpdateTheGameSpeed (Global_u8Level);
-
 		/*Update the Level*/
 		Global_u8Level++;
+
+		/*Update the Game Speed*/
+		UpdateTheGameSpeed (Global_u8Level);
 
 		HTFT_voidDrawNumber	(Global_u8Level, X_LEVELS_START, Y_LEVELS_START, TFT_COLOR_WHITE, TFT_COLOR_BLACK, FONTSIZE_LEVELS);
 	}
@@ -199,7 +210,7 @@ static void UpdatePointsAndLevel (void)
 //***************************************************************************************************************
 static void UpdateTheGameSpeed (u8 Copy_u8GameLevel)
 {
-	MTimer3_voidSetIntervalPeriodic ( ((DELAY_INITIAL_SPEED)-(DELAY_SPEED_LEVELUP*Copy_u8GameLevel)) , MoveTheSnake);
+	MTimer3_voidSetIntervalPeriodic ( ((DELAY_SPEED_LEVEL0)-(DELAY_SPEED_LEVELUP*Copy_u8GameLevel)) , MoveTheSnake);
 }
 //***************************************************************************************************************
 static void DrawTheFruit (void)
@@ -221,7 +232,7 @@ static void PlaceTheFruit (void)
 	Global_u8YPOS_Fruit = (RandomNumberGenerator( MTimer3_u16GetRemainingTime() ) % (Y_FRUIT_UPPERRANGE-Y_FRUIT_LOWERRANGE))
 								+ (Y_FRUIT_LOWERRANGE);
 
-	/*Place the Fruit Randomly*/
+	/*Draw the Fruit in the Randomly chosen Spot*/
 	DrawTheFruit();
 }
 //***************************************************************************************************************
@@ -248,28 +259,50 @@ static u32 RandomNumberGenerator (u16 Copy_u16RandomValue)
 	return (z1 ^ z2 ^ z3 ^ z4);
 }
 //***************************************************************************************************************
+static void EraseOldSnake (void)
+{
+	//Erase the Last Part of the Snake
+	HTFT_voidDrawRectangle  (Snake[Global_u8SnakeLength-1].X_Position , (Snake[Global_u8SnakeLength-1].X_Position)+6,
+							(Snake[Global_u8SnakeLength-1].Y_Position), (Snake[Global_u8SnakeLength-1].Y_Position)+6, TFT_COLOR_LIGHTBROWN);
+
+}
+//***************************************************************************************************************
 static void DrawTheSnake (void)
 {
-	for(u8 i=0; i<Global_u8SnakeLength; i++)
+	/*Draw the Head*/
+	HTFT_voidDrawRectangle  (Snake[0].X_Position , (Snake[0].X_Position)+SNAKE_SIZE,
+							(Snake[0].Y_Position), (Snake[0].Y_Position)+SNAKE_SIZE, TFT_COLOR_DARKGREEN);
+
+	/*Draw the Eyes*/
+	switch(Snake[0].Direction)
 	{
-		if( (Snake[i].BodyPart) == HEAD)
-		{
-			/*Draw Head*/
-			HTFT_voidDrawRectangle  (Snake[i].X_Position , (Snake[i].X_Position)+6,
-									(Snake[i].Y_Position), (Snake[i].Y_Position)+6, TFT_COLOR_DARKGREEN);
-		}
-		else if( (Snake[i].BodyPart) == TAIL)
-		{
-			/*Erase the Last Part of the Snake*/
-			HTFT_voidDrawRectangle  (Snake[i].X_Position , (Snake[i].X_Position)+6,
-									(Snake[i].Y_Position), (Snake[i].Y_Position)+6, TFT_COLOR_LIGHTBROWN);
-		}
-		else
-		{
-			/*Draw Body*/
-			HTFT_voidDrawRectangle  (Snake[i].X_Position , (Snake[i].X_Position)+6,
-									(Snake[i].Y_Position), (Snake[i].Y_Position)+6, TFT_COLOR_GREEN);
-		}
+		case RIGHT:
+			HTFT_voidDrawPixel     (Snake[0].X_Position +EYE_POSITION_4, Snake[0].Y_Position +EYE_POSITION_2, TFT_COLOR_WHITE);
+			HTFT_voidDrawPixel     (Snake[0].X_Position +EYE_POSITION_4, Snake[0].Y_Position +EYE_POSITION_3, TFT_COLOR_WHITE);
+			break;
+
+		case LEFT:
+			HTFT_voidDrawPixel     (Snake[0].X_Position +EYE_POSITION_1, Snake[0].Y_Position +EYE_POSITION_2, TFT_COLOR_WHITE);
+			HTFT_voidDrawPixel     (Snake[0].X_Position +EYE_POSITION_1, Snake[0].Y_Position +EYE_POSITION_3, TFT_COLOR_WHITE);
+			break;
+
+		case UP:
+			HTFT_voidDrawPixel     (Snake[0].X_Position +EYE_POSITION_2, Snake[0].Y_Position +EYE_POSITION_1, TFT_COLOR_WHITE);
+			HTFT_voidDrawPixel     (Snake[0].X_Position +EYE_POSITION_3, Snake[0].Y_Position +EYE_POSITION_1, TFT_COLOR_WHITE);
+			break;
+
+		case DOWN:
+			HTFT_voidDrawPixel     (Snake[0].X_Position +EYE_POSITION_2, Snake[0].Y_Position +EYE_POSITION_4, TFT_COLOR_WHITE);
+			HTFT_voidDrawPixel     (Snake[0].X_Position +EYE_POSITION_3, Snake[0].Y_Position +EYE_POSITION_4, TFT_COLOR_WHITE);
+			break;
+	}
+
+
+	/*Draw the Body*/
+	for(u8 i=1; i<Global_u8SnakeLength-1; i++)
+	{
+		HTFT_voidDrawRectangle  (Snake[i].X_Position , (Snake[i].X_Position)+SNAKE_SIZE,
+								(Snake[i].Y_Position), (Snake[i].Y_Position)+SNAKE_SIZE, TFT_COLOR_GREEN);
 	}
 }
 //***************************************************************************************************************
@@ -341,8 +374,11 @@ static void MoveTheSnake (void)
 		PlaceTheFruit();
 	}
 
-	DrawTheFruit();
-	DrawTheSnake();
+	/*Redraw the Grid, the Snake, and the Fruit*/
+	EraseOldSnake();
+	DrawTheGrid  ();
+	DrawTheFruit ();
+	DrawTheSnake ();
 }
 //***************************************************************************************************************
 static u8 CheckButtons (void)
@@ -380,7 +416,8 @@ static void PauseTheGame (void)
 							Y_PAUSEGAME_BOX_START, Y_PAUSEGAME_BOX_END, TFT_COLOR_LIGHTBROWN);
 
 
-	/*Redraw the Snake and the Fruit*/
+	/*Redraw the Grid, the Snake, and the Fruit*/
+	DrawTheGrid ();
 	DrawTheFruit();
 	DrawTheSnake();
 
@@ -530,8 +567,8 @@ static u8 CheckHitBorder (void)
 //***************************************************************************************************************
 static void UpdateTheBody (void)
 {
-	Snake[Global_u8SnakeLength] 			= Snake[Global_u8SnakeLength-1];
-	Snake[Global_u8SnakeLength-1].BodyPart  = BODY;
+	/*Copy the last Body part*/
+	Snake[Global_u8SnakeLength] = Snake[Global_u8SnakeLength-1];
 
 	/*Update the Tail Position*/
 	switch(Snake[Global_u8SnakeLength-1].Direction)
