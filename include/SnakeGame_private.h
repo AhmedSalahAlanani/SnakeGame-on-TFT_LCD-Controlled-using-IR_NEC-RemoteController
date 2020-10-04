@@ -34,7 +34,7 @@
 
 #define X_PAUSEGAME_START			(20U)
 
-#define X_GAME_OVER_1				(15U)
+#define X_GAME_OVER_1				(8U)
 #define X_GAME_OVER_2				(8U)
 
 #define X_SNAKE_STARTPOSITION		(55U)
@@ -74,6 +74,13 @@
 #define Y_FRUIT_LOWERRANGE			(16U)
 #define Y_FRUIT_UPPERRANGE			(152U)
 
+/* EYES POSITIONS	*/
+#define EYE_POSITION_1				(1U)
+#define EYE_POSITION_2				(2U)
+#define EYE_POSITION_3				(4U)
+#define EYE_POSITION_4				(5U)
+
+
 /* DISPLAY EDGES	*/
 #define DISPLAY_X1					(0U)
 #define DISPLAY_X2					(127U)
@@ -88,6 +95,13 @@
 #define FIELD_X2					(125U)
 #define FIELD_Y1					(13U)
 #define FIELD_Y2					(157U)
+
+/* GRID	*/
+#define GRID_X1						(32U)
+#define GRID_X2						(63U)
+#define GRID_X3						(94U)
+#define GRID_Y1						(61U)
+#define GRID_Y2						(109U)
 
 /* FONT SIZES	*/
 #define FONTSIZE_WELCOME_MESSAGE	(4U)
@@ -110,9 +124,9 @@
 /* ANIMATION DELAYS	*/
 #define DELAY_WELCOME_MESSAGE		(2000UL)
 #define DELAY_TIMEOUT				(65000UL)
-#define DELAY_INITIAL_SPEED			(800UL)
-#define DELAY_SPEED_LEVELUP			(200UL)
-#define DELAY_END_GAME				(1000UL)
+#define DELAY_SPEED_LEVEL0			(1000UL)
+#define DELAY_SPEED_LEVELUP			(150UL)
+#define DELAY_END_GAME				(1200UL)
 #define DELAY_GAME_OVER				(3000UL)
 
 /*
@@ -120,14 +134,6 @@
 *                                        		TYPE DEFINITIONS
 *********************************************************************************************************
 */
-/* SNAKE BODY PARTS */
-typedef enum SNAKE_BODYPART
-{
-	HEAD	= 0,
-	BODY	= 1,
-	TAIL	= 2
-} SNAKE_BODYPART;
-
 /* DIRECTIONS */
 typedef enum DIRECTIONSTYPE
 {
@@ -138,12 +144,12 @@ typedef enum DIRECTIONSTYPE
 } DIRECTIONSTYPE;
 
 
-/* SnakeBodyPart Type */
+/* Snake Type */
 typedef struct
 {
 	u8     		   	X_Position;
 	u8     		   	Y_Position;
-	SNAKE_BODYPART 	BodyPart;
+	//SNAKE_BODYPART 	BodyPart;
 	DIRECTIONSTYPE	Direction;
 } SNAKE_TYPE;
 
@@ -169,6 +175,7 @@ static void InitSystem			  (void);
 static void DisplayWelcomeMessage (void);
 static void DrawTheField		  (void);
 static void DrawTheBorders 		  (void);
+static void DrawTheGrid 		  (void);
 static void DisplayPromptMessage  (void);
 static void StartNewGame 	   	  (void);
 static void UpdatePointsAndLevel  (void);
@@ -176,6 +183,7 @@ static void UpdateTheGameSpeed 	  (u8 Copy_u8GameLevel);
 static void DrawTheFruit 		  (void);
 static void PlaceTheFruit 		  (void);
 static u32  RandomNumberGenerator (u16 Copy_u16RandomValue);
+static void EraseOldSnake 		  (void);
 static void DrawTheSnake 		  (void);
 static void MoveTheSnake		  (void);
 static u8   CheckButtons		  (void);
